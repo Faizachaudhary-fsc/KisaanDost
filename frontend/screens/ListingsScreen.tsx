@@ -183,11 +183,11 @@ export default function ListingsScreen({ navigation }: Props) {
 
   // ── Filter header ───────────────────────────────────────────────────────
   const CROP_FILTER_OPTIONS: { label: string; value: Crop | '' }[] = [
-    { label: t('marketplace.crops.allCrops'), value: '' },
-    { label: `${getCropIcon('wheat')} ${t('marketplace.crops.wheat.labelFull')}`, value: 'wheat' },
-    { label: `${getCropIcon('rice')} ${t('marketplace.crops.rice.labelFull')}`, value: 'rice' },
-    { label: `${getCropIcon('cotton')} ${t('marketplace.crops.cotton.labelFull')}`, value: 'cotton' },
-    { label: `${getCropIcon('maize')} ${t('marketplace.crops.maize.labelFull')}`, value: 'maize' },
+    { label: t('crops.allCrops'), value: '' },
+    { label: `${getCropIcon('wheat')} ${t('crops.wheat.labelFull')}`, value: 'wheat' },
+    { label: `${getCropIcon('rice')} ${t('crops.rice.labelFull')}`, value: 'rice' },
+    { label: `${getCropIcon('cotton')} ${t('crops.cotton.labelFull')}`, value: 'cotton' },
+    { label: `${getCropIcon('maize')} ${t('crops.maize.labelFull')}`, value: 'maize' },
   ];
 
   const ListHeader = (

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createAudioPlayer } from 'expo-audio';
+import { Platform } from 'react-native';
 import VoiceRecorder from '../components/VoiceRecorder';
 import { StateCard, PrimaryButton } from '../components/ui';
 import LanguageToggle from '../components/ui/LanguageToggle';
@@ -29,11 +30,13 @@ export default function VoiceAssistantScreen() {
   const [hasAudio, setHasAudio] = useState(false);
 
   const ttsPlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(null);
+  const webAudioRef = useRef<HTMLAudioElement | null>(null);
   const ttsFileUriRef = useRef<string | null>(null);
 
   useEffect(() => {
     return () => {
       ttsPlayerRef.current?.remove();
+      webAudioRef.current?.pause();
       if (ttsFileUriRef.current) {
         deleteTempAudio(ttsFileUriRef.current);
       }
@@ -53,6 +56,8 @@ export default function VoiceAssistantScreen() {
     setHasAudio(false);
     ttsPlayerRef.current?.remove();
     ttsPlayerRef.current = null;
+    webAudioRef.current?.pause();
+    webAudioRef.current = null;
     if (ttsFileUriRef.current) {
       deleteTempAudio(ttsFileUriRef.current);
       ttsFileUriRef.current = null;
@@ -63,6 +68,11 @@ export default function VoiceAssistantScreen() {
   const handleTryAgain = useCallback(() => { resetState(); }, [resetState]);
 
   const handleReplay = useCallback(() => {
+    if (Platform.OS === 'web' && webAudioRef.current) {
+      webAudioRef.current.currentTime = 0;
+      void webAudioRef.current.play();
+      return;
+    }
     if (ttsPlayerRef.current) {
       ttsPlayerRef.current.seekTo(0);
       ttsPlayerRef.current.play();
@@ -86,18 +96,24 @@ export default function VoiceAssistantScreen() {
 
       if (voiceResult.audio_base64) {
         try {
-          const fileUri = await decodeBase64Audio(voiceResult.audio_base64);
+          const fileUri = await decodeBase64Audio(voiceResult.audio_base64, '.wav');
           ttsFileUriRef.current = fileUri;
-          const player = createAudioPlayer(fileUri);
-          ttsPlayerRef.current = player;
+          if (Platform.OS === 'web') {
+            const audio = new Audio(fileUri);
+            webAudioRef.current = audio;
+            void audio.play();
+          } else {
+            const player = createAudioPlayer(fileUri);
+            ttsPlayerRef.current = player;
+            player.play();
+          }
           setHasAudio(true);
-          player.play();
         } catch (audioErr) {
           console.warn('Failed to decode/play TTS audio:', audioErr);
         }
       }
     } catch (err) {
-      setError(t('voice.errorFallback'));
+      setError('Voice AI service is temporarily unavailable.');
       console.warn('Voice query failed:', err);
     } finally {
       setIsQuerying(false);

@@ -1,0 +1,53 @@
+# Python .gitignore for the KisaanDost backend.
+# Scoped to backend/ on purpose: the frontend has its own .gitignore, and this
+# must not affect Person 2's tooling.
+
+# ── Byte-compiled / caches ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ── Virtual environments ───────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Distribution / packaging ───────────────────────────────────────────────
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# ── Environment files (never commit real credentials) ──────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Testing / coverage ─────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+
+# ── Editors / OS ───────────────────────────────────────────────────────────
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ── Runtime artefacts ──────────────────────────────────────────────────────
+*.log
+logs/
+# Uploaded audio and generated TTS output, once the AI pipeline lands.
+tmp/
+uploads/
+*.wav
+*.mp3
+*.m4a

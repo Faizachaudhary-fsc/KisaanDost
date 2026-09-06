@@ -136,7 +136,7 @@ const en = {
   },
 };
 
-const ur: Record<string, Record<string, string>> = {
+const ur: TranslationKeys = {
   common: {
     loading: 'لوڈ ہو رہا ہے…',
     error: 'کچھ غلط ہو گیا',

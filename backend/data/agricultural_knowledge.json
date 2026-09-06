@@ -1,0 +1,414 @@
+{
+  "_meta": {
+    "description": "Small agricultural knowledge base for the KisaanDost voice assistant (hackathon MVP). Covers wheat, rice, cotton, maize and potato with practical guidance for Pakistani farmers.",
+    "disclaimer": "Content is general, well-established agronomy guidance. The 'source_url' values are the HOMEPAGES of the cited authoritative organisations, not deep links to specific pages, so no citation is fabricated. Verify locally before field application. Contains no pesticide/fertiliser dosages beyond widely published general recommendations.",
+    "language_note": "Documents are written in English. The embedding model (text-embedding-v4, Qwen3-Embedding series) is multilingual and covers Urdu, so an Urdu question retrieves the relevant English chunk cross-lingually.",
+    "sources": [
+      {"name": "Pakistan Agricultural Research Council (PARC)", "url": "https://www.parc.gov.pk"},
+      {"name": "Punjab Agriculture Department", "url": "https://www.agripunjab.gov.pk"},
+      {"name": "Food and Agriculture Organization (FAO)", "url": "https://www.fao.org"}
+    ]
+  },
+  "documents": [
+    {
+      "id": "wheat-intro",
+      "title": "Wheat: an overview",
+      "crop": "wheat",
+      "topic": "introduction",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Wheat (gandum) is Pakistan's main Rabi (winter) season food grain and the country's staple food. It is sown in autumn and harvested in spring, mostly under irrigated conditions in Punjab and Sindh."
+    },
+    {
+      "id": "wheat-sowing-time",
+      "title": "Wheat sowing time",
+      "crop": "wheat",
+      "topic": "planting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "The best time to sow wheat in most of Pakistan's plains is from the first week of November to about mid-November. Timely sowing gives higher yields, and each week of delay after mid-November lowers the yield potential."
+    },
+    {
+      "id": "wheat-seed-rate",
+      "title": "Wheat seed rate and spacing",
+      "crop": "wheat",
+      "topic": "planting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "A common seed rate for timely-sown irrigated wheat is about 50 kg per acre (roughly 120 kg per hectare), drilled in rows about 22 cm (9 inches) apart. Use healthy, certified seed and treat it against seed-borne diseases before sowing."
+    },
+    {
+      "id": "wheat-irrigation",
+      "title": "Wheat irrigation schedule",
+      "crop": "wheat",
+      "topic": "irrigation",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Irrigated wheat usually needs about four to five irrigations. The first irrigation is the most important and is given around 20-25 days after sowing at the crown-root-initiation stage. Other sensitive stages are tillering, jointing, booting and grain filling."
+    },
+    {
+      "id": "wheat-fertilizer",
+      "title": "Wheat fertiliser and nutrients",
+      "crop": "wheat",
+      "topic": "fertilizer",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Wheat responds strongly to nitrogen. A general recommendation for irrigated wheat is roughly 120 kg nitrogen, 90 kg phosphorus and 60 kg potash per hectare. Apply all phosphorus and potash and part of the nitrogen at sowing, and give the remaining nitrogen with the first one or two irrigations."
+    },
+    {
+      "id": "wheat-yellow-leaves",
+      "title": "Wheat: yellowing leaves",
+      "crop": "wheat",
+      "topic": "symptoms",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Yellowing of wheat leaves is most often caused by nitrogen deficiency, first showing on the older lower leaves. Waterlogging, poor drainage and yellow (stripe) rust can also yellow the leaves, so check for rust pustules and standing water before adding more fertiliser."
+    },
+    {
+      "id": "wheat-rusts",
+      "title": "Wheat rust diseases",
+      "crop": "wheat",
+      "topic": "diseases",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "The most damaging wheat diseases in Pakistan are the rusts, especially yellow (stripe) rust and brown (leaf) rust, which appear as yellow or orange-brown powdery pustules on the leaves. Growing approved rust-resistant varieties is the main defence."
+    },
+    {
+      "id": "wheat-aphids",
+      "title": "Wheat aphids",
+      "crop": "wheat",
+      "topic": "pests",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Aphids can build up on wheat in warm, dry spells, sucking sap and leaving sticky honeydew. Natural enemies such as ladybird beetles often keep them in check; control measures are needed only when populations are high."
+    },
+    {
+      "id": "wheat-weeds",
+      "title": "Wheat weed management",
+      "crop": "wheat",
+      "topic": "weeds",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Major wheat weeds in Pakistan include wild oat (jangli jai) and littleseed canarygrass (Phalaris minor) among the grasses, plus several broadleaf weeds. Timely manual weeding or approved herbicides applied at the correct crop stage protect the yield."
+    },
+    {
+      "id": "wheat-harvest",
+      "title": "Wheat harvesting",
+      "crop": "wheat",
+      "topic": "harvesting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Wheat is usually ready to harvest in April, when the crop turns golden, the grain becomes hard and grain moisture drops to a safe level for storage. Timely harvesting avoids grain shattering and field losses."
+    },
+    {
+      "id": "rice-intro",
+      "title": "Rice: an overview",
+      "crop": "rice",
+      "topic": "introduction",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Rice (chawal) is a major Kharif (summer) crop and an important export earner for Pakistan, especially aromatic Basmati grown in the Kalar tract of Punjab, with large areas also grown in Sindh."
+    },
+    {
+      "id": "rice-nursery-transplant",
+      "title": "Rice nursery and transplanting",
+      "crop": "rice",
+      "topic": "planting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Most rice is grown by raising a nursery and then transplanting the seedlings. Seedlings are usually transplanted at about 25-35 days old into puddled, well-levelled fields, generally during June and July."
+    },
+    {
+      "id": "rice-irrigation",
+      "title": "Rice irrigation and water use",
+      "crop": "rice",
+      "topic": "irrigation",
+      "language": "en",
+      "source": "Food and Agriculture Organization (FAO)",
+      "source_url": "https://www.fao.org",
+      "content": "Traditional rice keeps a shallow layer of standing water (about 5 cm) in the field. Rice is water-intensive, but alternate wetting and drying — letting the water subside before re-flooding — can save water with little loss of yield."
+    },
+    {
+      "id": "rice-zinc-nutrients",
+      "title": "Rice: zinc deficiency and nutrients",
+      "crop": "rice",
+      "topic": "fertilizer",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Zinc deficiency is common in rice and shows as rusty-brown spots on the leaves and stunted growth a few weeks after transplanting. Applying zinc sulphate corrects it. Nitrogen should be given in split doses through the season."
+    },
+    {
+      "id": "rice-stem-borer",
+      "title": "Rice stem borer and leaf folder",
+      "crop": "rice",
+      "topic": "pests",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Rice stem borers bore into the stem, causing 'dead hearts' in young plants and empty white panicles ('white ears') later. Leaf folders fold the leaves and scrape the green tissue. Monitor the field and use recommended control only when it is truly needed."
+    },
+    {
+      "id": "rice-blast-blight",
+      "title": "Rice blast and bacterial leaf blight",
+      "crop": "rice",
+      "topic": "diseases",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Rice blast shows spindle-shaped spots with grey centres on the leaves, while bacterial leaf blight makes leaves dry from the tips along wavy yellow margins. Balanced nitrogen and resistant varieties reduce both diseases."
+    },
+    {
+      "id": "rice-harvest",
+      "title": "Rice harvesting",
+      "crop": "rice",
+      "topic": "harvesting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Rice is ready to harvest when about 80-85% of the grains in the panicle have turned golden-yellow and the grains are firm, usually in October and November. Harvesting too late causes shattering and grain breakage."
+    },
+    {
+      "id": "cotton-intro",
+      "title": "Cotton: an overview",
+      "crop": "cotton",
+      "topic": "introduction",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Cotton (kapas) is Pakistan's main fibre and cash crop, often called 'white gold'. It is a Kharif crop grown across the cotton belt of southern Punjab and Sindh."
+    },
+    {
+      "id": "cotton-sowing",
+      "title": "Cotton sowing",
+      "crop": "cotton",
+      "topic": "planting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Cotton is usually sown from April to May. Good stand establishment with proper row and plant spacing, along with approved (including Bt) varieties, gives the crop a strong, uniform start."
+    },
+    {
+      "id": "cotton-irrigation",
+      "title": "Cotton irrigation",
+      "crop": "cotton",
+      "topic": "irrigation",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Cotton needs careful irrigation; the first irrigation is applied after the plants are established. Flowering and boll formation are the most sensitive stages, and both water stress and waterlogging at this time reduce boll set."
+    },
+    {
+      "id": "cotton-whitefly",
+      "title": "Cotton whitefly",
+      "crop": "cotton",
+      "topic": "pests",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Whitefly is a serious cotton pest: it sucks sap and, more importantly, spreads Cotton Leaf Curl Virus. Avoiding excess nitrogen, keeping fields weed-free, conserving natural enemies and using recommended controls based on scouting all help manage it."
+    },
+    {
+      "id": "cotton-bollworms",
+      "title": "Cotton bollworms",
+      "crop": "cotton",
+      "topic": "pests",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Bollworms such as the pink bollworm and the American (cotton) bollworm attack squares, flowers and bolls, causing shedding and damaged bolls. Regular scouting and pheromone traps help decide when control is actually needed."
+    },
+    {
+      "id": "cotton-leaf-curl-virus",
+      "title": "Cotton Leaf Curl Virus (CLCuV)",
+      "crop": "cotton",
+      "topic": "diseases",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Cotton Leaf Curl Virus (CLCuV) causes upward or downward curling of the leaves, thickened veins and small leaf-like enations on the underside, with stunted plants and poor yield. It is spread by whitefly, so managing whitefly and growing tolerant varieties are the keys to control."
+    },
+    {
+      "id": "cotton-ipm",
+      "title": "Cotton integrated pest management",
+      "crop": "cotton",
+      "topic": "prevention",
+      "language": "en",
+      "source": "Food and Agriculture Organization (FAO)",
+      "source_url": "https://www.fao.org",
+      "content": "Integrated pest management in cotton means regular field scouting, protecting natural enemies, using pest thresholds before spraying, and rotating chemistry to avoid resistance, rather than spraying on a fixed calendar."
+    },
+    {
+      "id": "cotton-picking",
+      "title": "Cotton picking",
+      "crop": "cotton",
+      "topic": "harvesting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Seed cotton is hand-picked in several rounds as the bolls open. Clean, dry picking free of leaf trash keeps the lint quality high and fetches a better market price."
+    },
+    {
+      "id": "maize-intro",
+      "title": "Maize: an overview",
+      "crop": "maize",
+      "topic": "introduction",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Maize (makai) is grown in Pakistan in two seasons — spring and autumn — and is used as human food, poultry and animal feed, and fodder. Under good management with hybrid seed it is a high-yielding crop."
+    },
+    {
+      "id": "maize-sowing",
+      "title": "Maize sowing time",
+      "crop": "maize",
+      "topic": "planting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Spring maize is usually sown in January-February and autumn maize in July-August. Good hybrid seed, the right plant population and proper spacing are important for high yields."
+    },
+    {
+      "id": "maize-irrigation",
+      "title": "Maize irrigation",
+      "crop": "maize",
+      "topic": "irrigation",
+      "language": "en",
+      "source": "Food and Agriculture Organization (FAO)",
+      "source_url": "https://www.fao.org",
+      "content": "Maize is sensitive to water stress, especially at tasseling and silking (flowering). Missing irrigation at this stage causes poor grain set, so keep the crop well-watered during flowering."
+    },
+    {
+      "id": "maize-fertilizer",
+      "title": "Maize fertiliser and nutrients",
+      "crop": "maize",
+      "topic": "fertilizer",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Maize is a heavy feeder of nitrogen and also needs phosphorus and potash. Nitrogen is best applied in split doses through the season, with adequate phosphorus placed at sowing."
+    },
+    {
+      "id": "maize-pests",
+      "title": "Maize borers and fall armyworm",
+      "crop": "maize",
+      "topic": "pests",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Important maize pests include maize stem borers and the invasive fall armyworm, whose larvae feed in the whorl and leave ragged holes and moist frass. Early detection and recommended control protect the young plants."
+    },
+    {
+      "id": "maize-diseases",
+      "title": "Maize diseases",
+      "crop": "maize",
+      "topic": "diseases",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Common maize diseases include leaf blights (long greyish-brown lesions on the leaves), downy mildew and stalk rots. Using resistant hybrids, clean seed and balanced fertiliser reduces their impact."
+    },
+    {
+      "id": "maize-harvest",
+      "title": "Maize harvesting",
+      "crop": "maize",
+      "topic": "harvesting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Grain maize is harvested once the cobs are mature and the husks have dried; the grain is hard and its moisture is low enough for safe storage or further drying."
+    },
+    {
+      "id": "potato-intro",
+      "title": "Potato: an overview",
+      "crop": "potato",
+      "topic": "introduction",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Potato (aalu) is an important vegetable crop in Pakistan, grown mainly as an autumn and spring crop in Punjab districts such as Okara, Sahiwal and Pakpattan."
+    },
+    {
+      "id": "potato-planting",
+      "title": "Potato planting",
+      "crop": "potato",
+      "topic": "planting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Potato is planted from healthy, disease-free certified seed tubers, commonly in the autumn crop around late September to October and again in spring, on ridges with proper spacing."
+    },
+    {
+      "id": "potato-irrigation",
+      "title": "Potato irrigation",
+      "crop": "potato",
+      "topic": "irrigation",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Potato needs frequent, light irrigations to keep the soil evenly moist; both drought and waterlogging harm tuber development. Avoid heavy irrigation that keeps the ridges saturated for long."
+    },
+    {
+      "id": "potato-fertilizer",
+      "title": "Potato fertiliser and nutrients",
+      "crop": "potato",
+      "topic": "fertilizer",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Potato responds to balanced fertiliser and has a relatively high potassium requirement along with nitrogen and phosphorus. Well-rotted organic matter improves tuber yield and quality."
+    },
+    {
+      "id": "potato-late-blight",
+      "title": "Potato late blight",
+      "crop": "potato",
+      "topic": "diseases",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Late blight is the most serious potato disease. It appears as dark, water-soaked patches on the leaves that spread quickly in cool, humid, cloudy weather, often with a white mould on the leaf underside, and can destroy the crop. Grow resistant varieties and take preventive measures when the weather favours the disease."
+    },
+    {
+      "id": "potato-disease-symptoms",
+      "title": "Potato: common disease symptoms",
+      "crop": "potato",
+      "topic": "symptoms",
+      "language": "en",
+      "source": "Pakistan Agricultural Research Council (PARC)",
+      "source_url": "https://www.parc.gov.pk",
+      "content": "Common signs of disease in potato include dark or brown spots on the leaves (late and early blight), yellowing and curling of leaves from aphid-spread viruses, and rotting of the tubers. Using certified seed and rotating crops lowers the risk."
+    },
+    {
+      "id": "potato-pests",
+      "title": "Potato pests",
+      "crop": "potato",
+      "topic": "pests",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Key potato pests are the potato tuber moth, whose larvae tunnel into the tubers, aphids that spread viral diseases, and cutworms that cut young stems. Earthing up and covering exposed tubers reduces tuber moth damage."
+    },
+    {
+      "id": "potato-harvest-storage",
+      "title": "Potato harvesting and storage",
+      "crop": "potato",
+      "topic": "harvesting",
+      "language": "en",
+      "source": "Punjab Agriculture Department",
+      "source_url": "https://www.agripunjab.gov.pk",
+      "content": "Potatoes are harvested once the tubers are mature and the skin is firm ('set'), after the tops begin to dry. Careful handling and cool, dark, ventilated storage reduce rotting and greening."
+    }
+  ]
+}

@@ -5,7 +5,8 @@
  * — decoding it into temporary local files that expo-audio can play.
  */
 
-import { File, Paths } from 'expo-file-system';
+import { Platform } from 'react-native';
+import type { File as ExpoFile, Paths as ExpoPaths } from 'expo-file-system';
 
 /**
  * Decodes a base64-encoded audio string into a temporary local .m4a file
@@ -22,6 +23,16 @@ export async function decodeBase64Audio(
   base64: string,
   extension: string = '.m4a'
 ): Promise<string> {
+  if (Platform.OS === 'web') {
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    return URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
+  }
+
+  const { File, Paths } = require('expo-file-system') as {
+    File: typeof ExpoFile;
+    Paths: typeof ExpoPaths;
+  };
   const fileName = `tts_${Date.now()}_${Math.random().toString(36).substring(2, 8)}${extension}`;
   const file = new File(Paths.cache, fileName);
 
@@ -38,7 +49,13 @@ export async function decodeBase64Audio(
  * @param fileUri - The local file URI returned by decodeBase64Audio().
  */
 export async function deleteTempAudio(fileUri: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    URL.revokeObjectURL(fileUri);
+    return;
+  }
+
   try {
+    const { File } = require('expo-file-system') as { File: typeof ExpoFile };
     const file = new File(fileUri);
     if (file.exists) {
       file.delete();

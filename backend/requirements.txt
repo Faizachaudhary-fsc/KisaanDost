@@ -1,0 +1,45 @@
+# KisaanDost backend — initial FastAPI foundation.
+# Deliberately minimal: no AI/ML packages yet. Those arrive with the AI pipeline
+# task so the dev environment stays fast to install.
+
+# Lower bounds rather than exact pins: this was verified on Python 3.14, where
+# older pydantic releases have no prebuilt pydantic-core wheel and pip falls
+# back to compiling Rust (which fails without MSVC build tools). Minimums keep
+# the team on versions that ship 3.14 wheels while staying installable on 3.11+.
+
+# Web framework and ASGI server
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
+
+# Settings loaded from .env (pydantic itself ships with fastapi)
+pydantic>=2.12.0
+pydantic-settings>=2.7.0
+
+# Async MongoDB driver
+motor>=3.6.0
+
+# Required by FastAPI to parse multipart/form-data — the voice endpoint
+# receives its audio as a file upload.
+python-multipart>=0.0.20
+
+# ── Alibaba Cloud AI (Model Studio / DashScope) ─────────────────────────────
+# Official Alibaba Cloud SDK — the ONLY AI provider dependency. Used for Qwen
+# (answer generation) and, when enabled, DashScope ASR/TTS. We call Alibaba
+# Cloud remotely rather than downloading local speech/LLM models, so nothing
+# heavy (torch, transformers, whisper) is pulled in. Imports are guarded in
+# app/services so the backend still boots if this wheel is unavailable.
+dashscope>=1.20.0
+
+# Official OpenAI-compatible client required by Qwen3.5-Omni.
+openai>=1.52.0
+
+# Official Google Gemini API SDK for audio understanding, text, and TTS.
+google-genai>=2.22.0
+
+# Optional Urdu-capable speech recognition and synthesis provider.
+azure-cognitiveservices-speech>=1.42.0
+
+# ── Testing ────────────────────────────────────────────────────────────────
+# httpx also powers fastapi.testclient.TestClient.
+pytest>=8.3.4
+httpx>=0.28.1

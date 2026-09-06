@@ -6,14 +6,15 @@
  * resolved value — they are never thrown. This mirrors the real backend's
  * response shape so the UI handles both paths identically.
  *
- * Toggle USE_MOCK to false once the real backend is ready. When doing so,
- * each function should route through fetch() calls to API_BASE_URL instead.
+ * Set USE_MOCK=true in frontend/.env only for offline UI development. Real
+ * mode routes each function through fetch() calls to API_BASE_URL.
  */
 
-import * as Constants from 'expo-constants';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
-// Set to false to route all calls through the real backend via fetch()
-const USE_MOCK = true;
+// Set USE_MOCK=true in frontend/.env only when developing without the backend.
+const USE_MOCK = Constants.expoConfig?.extra?.useMock === true;
 
 /**
  * Real backend base URL — sourced from app.config.js via Constants.expoConfig.extra.apiBaseUrl
@@ -21,7 +22,9 @@ const USE_MOCK = true;
  * On Day 5, update .env and restart the Expo dev server to switch backends.
  */
 export const API_BASE_URL: string =
-  Constants.expoConfig?.extra?.apiBaseUrl || 'http://localhost:3000';
+  Constants.expoConfig?.extra?.apiBaseUrl || 'http://localhost:8000';
+
+const VOICE_REQUEST_TIMEOUT_MS = 90_000;
 
 // Log the configured API URL during development (comment out in production)
 if (__DEV__) {
@@ -103,6 +106,53 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function requestJson<T>(path: string, init?: RequestInit): Promise<T | ErrorResponse> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), VOICE_REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, { ...init, signal: controller.signal });
+    let body: T | ErrorResponse;
+
+    try {
+      body = await response.json();
+    } catch {
+      throw new Error(`Backend returned an invalid response (${response.status})`);
+    }
+
+    if (!response.ok) {
+      if (typeof body === 'object' && body !== null && 'success' in body && body.success === false) {
+        return body as ErrorResponse;
+      }
+      throw new Error(`Backend request failed (${response.status})`);
+    }
+
+    return body;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Voice request timed out');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function audioFilename(mimeType: string, uri: string): string {
+  const uriFilename = uri.split('/').pop()?.split('?')[0];
+  if (uriFilename?.includes('.')) return uriFilename;
+
+  const extensionByMimeType: Record<string, string> = {
+    'audio/webm': 'webm',
+    'audio/ogg': 'ogg',
+    'audio/wav': 'wav',
+    'audio/x-wav': 'wav',
+    'audio/mp4': 'm4a',
+    'audio/m4a': 'm4a',
+    'audio/mpeg': 'mp3',
+  };
+  return `recording.${extensionByMimeType[mimeType.toLowerCase()] || 'm4a'}`;
+}
+
 /**
  * Placeholder base64 audio string.
  * Represents a tiny silent .m4a — in production the backend returns real
@@ -176,15 +226,28 @@ const mockListings: Listing[] = [
 export async function sendVoiceQuery(
   audioUri: string,
   farmerId?: string
-): Promise<VoiceResponse> {
+): Promise<VoiceResponse | ErrorResponse> {
   if (!USE_MOCK) {
-    // TODO: implement real fetch() call to API_BASE_URL + '/api/assistant/voice'
-    // const formData = new FormData();
-    // formData.append('audio', { uri: audioUri, type: 'audio/m4a', name: 'recording.m4a' });
-    // if (farmerId) formData.append('farmerId', farmerId);
-    // const res = await fetch(API_BASE_URL + '/api/assistant/voice', { method: 'POST', body: formData });
-    // return res.json();
-    throw new Error('Real backend not yet implemented');
+    const formData = new FormData();
+
+    if (Platform.OS === 'web') {
+      const audioResponse = await fetch(audioUri);
+      if (!audioResponse.ok) {
+        throw new Error(`Unable to read recorded audio (${audioResponse.status})`);
+      }
+      const audioBlob = await audioResponse.blob();
+      const mimeType = audioBlob.type || 'audio/webm';
+      formData.append('audio', audioBlob, audioFilename(mimeType, audioUri));
+    } else {
+      const filename = audioFilename('audio/m4a', audioUri);
+      formData.append('audio', { uri: audioUri, type: 'audio/m4a', name: filename } as any);
+    }
+
+    if (farmerId) formData.append('farmerId', farmerId);
+    return requestJson<VoiceResponse>('/api/assistant/voice', {
+      method: 'POST',
+      body: formData,
+    });
   }
 
   await delay(1500);
@@ -222,8 +285,11 @@ export async function createListing(
   listing: ListingInput
 ): Promise<ApiResponse> {
   if (!USE_MOCK) {
-    // TODO: fetch(API_BASE_URL + '/api/listings', { method: 'POST', body: JSON.stringify(listing) })
-    throw new Error('Real backend not yet implemented');
+    return requestJson('/api/listings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(listing),
+    });
   }
 
   await delay(400);
@@ -277,8 +343,11 @@ export async function getListings(
   filters: { crop?: Crop; location?: string } = {}
 ): Promise<ApiResponse> {
   if (!USE_MOCK) {
-    // TODO: build query string from filters, fetch(API_BASE_URL + '/api/listings?' + qs)
-    throw new Error('Real backend not yet implemented');
+    const params = new URLSearchParams();
+    if (filters.crop) params.set('crop', filters.crop);
+    if (filters.location?.trim()) params.set('location', filters.location.trim());
+    const query = params.toString();
+    return requestJson(`/api/listings${query ? `?${query}` : ''}`);
   }
 
   await delay(300);
@@ -308,8 +377,7 @@ export async function getListings(
 
 export async function getListingById(id: string): Promise<ApiResponse> {
   if (!USE_MOCK) {
-    // TODO: fetch(API_BASE_URL + '/api/listings/' + id)
-    throw new Error('Real backend not yet implemented');
+    return requestJson(`/api/listings/${encodeURIComponent(id)}`);
   }
 
   await delay(200);
@@ -331,8 +399,7 @@ export async function getListingById(id: string): Promise<ApiResponse> {
 
 export async function deleteListing(id: string): Promise<ApiResponse> {
   if (!USE_MOCK) {
-    // TODO: fetch(API_BASE_URL + '/api/listings/' + id, { method: 'DELETE' })
-    throw new Error('Real backend not yet implemented');
+    return requestJson(`/api/listings/${encodeURIComponent(id)}`, { method: 'DELETE' });
   }
 
   await delay(300);

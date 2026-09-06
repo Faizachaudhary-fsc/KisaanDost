@@ -36,7 +36,8 @@ export default {
     ],
     extra: {
       /** API base URL for real backend calls. Sourced from process.env.API_BASE_URL (.env file) */
-      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000',
+      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000',
+      useMock: process.env.USE_MOCK === 'true',
     },
   },
 };

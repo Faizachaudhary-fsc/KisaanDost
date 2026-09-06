@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import {
   useAudioRecorder,
@@ -226,11 +227,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)' }
+      : {
+          elevation: 4,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 4,
+        }),
   },
   micButtonRecording: {
     backgroundColor: colors.error,
@@ -238,7 +243,7 @@ const styles = StyleSheet.create({
   micButtonDisabled: {
     backgroundColor: colors.neutral,
     elevation: 0,
-    shadowOpacity: 0,
+    ...(Platform.OS === 'web' ? { boxShadow: 'none' } : { shadowOpacity: 0 }),
   },
   micIcon: {
     fontSize: 40,
