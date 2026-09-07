@@ -113,7 +113,7 @@ export default function VoiceAssistantScreen() {
         }
       }
     } catch (err) {
-      setError('Voice AI service is temporarily unavailable.');
+      setError(err instanceof Error ? err.message : 'Voice AI service is temporarily unavailable.');
       console.warn('Voice query failed:', err);
     } finally {
       setIsQuerying(false);

@@ -35,7 +35,7 @@ class Settings(BaseSettings):
 
     # ── Google Gemini voice assistant ─────────────────────────────────────
     GEMINI_API_KEY: str = ""
-    GEMINI_TEXT_MODEL: str = "gemini-3.8-flash"
+    GEMINI_TEXT_MODEL: str = "gemini-2.5-flash"
     GEMINI_TTS_MODEL: str = "gemini-2.5-flash-preview-tts"
     GEMINI_TTS_VOICE: str = "Kore"
 

@@ -35,8 +35,8 @@ export default {
       'expo-asset',
     ],
     extra: {
-      /** API base URL for real backend calls. Sourced from process.env.API_BASE_URL (.env file) */
-      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000',
+      /** Optional LAN/tunnel URL for physical devices; platform defaults are selected in api.ts. */
+      apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || '',
       useMock: process.env.USE_MOCK === 'true',
     },
   },

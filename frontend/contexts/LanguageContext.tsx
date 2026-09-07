@@ -44,6 +44,8 @@ interface LanguageContextValue {
   language: Language;
   /** Switch the active language (persisted to AsyncStorage). */
   setLanguage: (lang: Language) => void;
+  /** Toggle between Urdu and English (persisted to AsyncStorage). */
+  toggleLanguage: () => void;
   /** Shorthand translate function bound to the current language. */
   t: (key: string, params?: Record<string, string | number>) => string;
 }
@@ -51,6 +53,7 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue>({
   language: 'ur',
   setLanguage: () => {},
+  toggleLanguage: () => {},
   t: (key: string) => key,
 });
 
@@ -104,6 +107,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const toggleLanguage = useCallback(() => {
+    setLanguage(language === 'ur' ? 'en' : 'ur');
+  }, [language, setLanguage]);
+
   /** Translate bound to the current language. */
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) =>
@@ -114,8 +121,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ language, setLanguage, t }),
-    [language, setLanguage, t],
+    () => ({ language, setLanguage, toggleLanguage, t }),
+    [language, setLanguage, toggleLanguage, t],
   );
 
   // Don't render children until we've resolved the initial language —

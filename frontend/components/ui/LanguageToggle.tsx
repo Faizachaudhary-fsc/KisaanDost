@@ -12,29 +12,18 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { colors } from '../../theme/colors';
 
 export default function LanguageToggle() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, toggleLanguage, t } = useLanguage();
 
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => setLanguage('ur')}
-        style={[styles.pill, language === 'ur' && styles.pillActive]}
+        onPress={toggleLanguage}
+        style={[styles.pill, styles.pillActive]}
         accessibilityRole="button"
-        accessibilityLabel="اردو"
+        accessibilityLabel={language === 'ur' ? t('common.language.english') : 'اردو'}
       >
-        <Text style={[styles.label, language === 'ur' && styles.labelActive]}>
-          اردو
-        </Text>
-      </Pressable>
-
-      <Pressable
-        onPress={() => setLanguage('en')}
-        style={[styles.pill, language === 'en' && styles.pillActive]}
-        accessibilityRole="button"
-        accessibilityLabel={t('common.language.english')}
-      >
-        <Text style={[styles.label, language === 'en' && styles.labelActive]}>
-          {t('common.language.english')}
+        <Text style={[styles.label, styles.labelActive]}>
+          {language === 'ur' ? t('common.language.english') : 'اردو'}
         </Text>
       </Pressable>
     </View>

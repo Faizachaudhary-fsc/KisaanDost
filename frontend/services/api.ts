@@ -18,13 +18,19 @@ const USE_MOCK = Constants.expoConfig?.extra?.useMock === true;
 
 /**
  * Real backend base URL — sourced from app.config.js via Constants.expoConfig.extra.apiBaseUrl
- * The value comes from the API_BASE_URL environment variable (.env file).
- * On Day 5, update .env and restart the Expo dev server to switch backends.
+ * EXPO_PUBLIC_API_BASE_URL is used for a physical device or tunnel.
+ * Android emulator and web receive safe local defaults below.
  */
+const configuredApiBaseUrl = String(Constants.expoConfig?.extra?.apiBaseUrl || '').replace(/\/$/, '');
+const configuredIsLocalhost = /https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredApiBaseUrl);
+
 export const API_BASE_URL: string =
-  Constants.expoConfig?.extra?.apiBaseUrl || 'http://localhost:8000';
+  Platform.OS === 'web'
+    ? (configuredApiBaseUrl && !configuredIsLocalhost ? configuredApiBaseUrl : 'http://localhost:8000')
+    : (configuredApiBaseUrl || 'http://localhost:8000');
 
 const VOICE_REQUEST_TIMEOUT_MS = 90_000;
+const DEFAULT_REQUEST_TIMEOUT_MS = 15_000;
 
 // Log the configured API URL during development (comment out in production)
 if (__DEV__) {
@@ -106,9 +112,13 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function requestJson<T>(path: string, init?: RequestInit): Promise<T | ErrorResponse> {
+async function requestJson<T>(
+  path: string,
+  init?: RequestInit,
+  timeoutMs: number = DEFAULT_REQUEST_TIMEOUT_MS,
+): Promise<T | ErrorResponse> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), VOICE_REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(`${API_BASE_URL}${path}`, { ...init, signal: controller.signal });
     let body: T | ErrorResponse;
@@ -129,7 +139,7 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T | Err
     return body;
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Voice request timed out');
+      throw new Error(timeoutMs === VOICE_REQUEST_TIMEOUT_MS ? 'Voice request timed out' : 'Backend request timed out');
     }
     throw error;
   } finally {
@@ -151,6 +161,18 @@ function audioFilename(mimeType: string, uri: string): string {
     'audio/mpeg': 'mp3',
   };
   return `recording.${extensionByMimeType[mimeType.toLowerCase()] || 'm4a'}`;
+}
+
+function audioMimeType(uri: string): string {
+  const extension = uri.split('?')[0].split('.').pop()?.toLowerCase();
+  return ({
+    webm: 'audio/webm',
+    ogg: 'audio/ogg',
+    wav: 'audio/wav',
+    m4a: 'audio/m4a',
+    mp4: 'audio/mp4',
+    mp3: 'audio/mpeg',
+  } as Record<string, string>)[extension || ''] || 'audio/m4a';
 }
 
 /**
@@ -239,15 +261,16 @@ export async function sendVoiceQuery(
       const mimeType = audioBlob.type || 'audio/webm';
       formData.append('audio', audioBlob, audioFilename(mimeType, audioUri));
     } else {
-      const filename = audioFilename('audio/m4a', audioUri);
-      formData.append('audio', { uri: audioUri, type: 'audio/m4a', name: filename } as any);
+      const mimeType = audioMimeType(audioUri);
+      const filename = audioFilename(mimeType, audioUri);
+      formData.append('audio', { uri: audioUri, type: mimeType, name: filename } as any);
     }
 
     if (farmerId) formData.append('farmerId', farmerId);
     return requestJson<VoiceResponse>('/api/assistant/voice', {
       method: 'POST',
       body: formData,
-    });
+    }, VOICE_REQUEST_TIMEOUT_MS);
   }
 
   await delay(1500);

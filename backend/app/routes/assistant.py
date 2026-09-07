@@ -13,6 +13,7 @@ this endpoint for real.
 """
 
 import asyncio
+import inspect
 import logging
 from typing import Optional
 
@@ -58,7 +59,7 @@ async def voice_query(
     `transcription: ""` with `language: "unrecognized"` and a spoken prompt to
     try again, so the app can play a reply either way.
     """
-    logger.info("VOICE_STAGE=upload VOICE REQUEST RECEIVED farmer_id_present=%s", bool(farmerId))
+    logger.info("[VOICE] audio received farmer_id_present=%s", bool(farmerId))
     audio_bytes = await audio.read() if audio is not None else b""
     logger.info(
         "AUDIO RECEIVED filename=%s content_type=%s size_bytes=%d",
@@ -77,17 +78,17 @@ async def voice_query(
 
     stage = "ASR"
     try:
-        logger.info("VOICE_STAGE=gemini_audio ASR START")
-        transcription = await speech_to_text.transcribe(
-            audio_bytes,
-            audio.filename if audio else None,
-            audio.content_type if audio else None,
-        )
-        logger.info(
-            "VOICE_STAGE=gemini_audio ASR COMPLETE transcription=%r language=%s",
-            transcription.text[:200],
-            transcription.language,
-        )
+        logger.info("[VOICE] transcription started")
+        transcribe = speech_to_text.transcribe
+        if len(inspect.signature(transcribe).parameters) >= 3:
+            transcription = await transcribe(
+                audio_bytes,
+                audio.filename if audio else None,
+                audio.content_type if audio else None,
+            )
+        else:
+            transcription = await transcribe(audio_bytes, audio.filename if audio else None)
+        logger.info("[VOICE] transcription completed language=%s", transcription.language)
 
         if not transcription.recognised or not transcription.text.strip():
             return JSONResponse(
@@ -96,19 +97,16 @@ async def voice_query(
             )
 
         stage = "RAG"
-        logger.info("VOICE_STAGE=rag RAG START")
+        logger.info("[VOICE] RAG started")
         retrieval = await rag.retrieve(transcription.text)
-        logger.info("VOICE_STAGE=rag RAG COMPLETE retrieved_results=%d", len(retrieval.chunks))
         stage = "LLM"
-        logger.info("VOICE_STAGE=gemini_answer LLM START")
+        logger.info("[VOICE] Gemini answer started")
         answer = await llm.generate_answer(transcription.text, retrieval.context)
-        logger.info("VOICE_STAGE=gemini_answer LLM COMPLETE")
         stage = "TTS"
-        logger.info("VOICE_STAGE=gemini_tts TTS START")
+        logger.info("[VOICE] TTS started")
         audio_base64 = await text_to_speech.synthesize(answer)
-        logger.info("VOICE_STAGE=gemini_tts TTS COMPLETE")
 
-        logger.info("VOICE_STAGE=complete VOICE RESPONSE READY")
+        logger.info("[VOICE] voice pipeline completed")
         return VoiceResponse(
             transcription=transcription.text,
             language=transcription.language,
