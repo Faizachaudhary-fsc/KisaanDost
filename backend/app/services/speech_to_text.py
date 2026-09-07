@@ -1,23 +1,9 @@
 """
 Urdu speech-to-text (ASR) service.
 
-HONEST-URDU NOTE (verified against Alibaba Cloud Model Studio docs):
-    No Alibaba Cloud ASR model (Qwen-ASR, Fun-ASR, Paraformer) currently lists
-    Urdu among its supported languages. Hindi and Arabic ARE supported; Urdu is
-    NOT. Recognising Urdu speech with a Hindi/Arabic model and labelling the
-    result "urdu" would be false, which the task explicitly forbids.
-
-Consequences of that fact, reflected in this module:
-    1. There is a clean provider abstraction (`ASRProvider`) so the ASR backend
-       can be swapped for a genuinely Urdu-capable one WITHOUT touching
-       assistant.py — the route only ever sees `transcribe()` / TranscriptionResult.
-    2. ASR is DISABLED by default (settings.ASR_ENABLED = False). While disabled,
-       `transcribe()` reports the audio as unrecognised, which the route turns
-       into the contract's HTTP-200 "please repeat in Urdu" fallback.
-    3. When explicitly enabled with a key, the DashScope multilingual model is
-       used, but the language is reported HONESTLY from the provider's own
-       detection. `language == "urdu"` is returned only when the provider truly
-       detected Urdu — never assumed.
+Groq's OpenAI-compatible transcription API is the active provider. The
+provider abstraction keeps the route contract stable while allowing the
+uploaded WebM/M4A bytes to be sent directly to the current OpenAI SDK.
 
 Replace/extend the providers only. `transcribe()`'s signature and the
 TranscriptionResult shape are what the route depends on.
@@ -30,7 +16,7 @@ import tempfile
 from typing import Optional, Protocol
 
 from app.config import settings
-from app.services.gemini_client import GeminiConfigurationError, GeminiProviderError, transcribe_audio
+from app.services.gemini_client import GeminiConfigurationError, GeminiProviderError
 
 logger = logging.getLogger(__name__)
 
@@ -75,21 +61,78 @@ def _normalise_language(raw: Optional[str]) -> str:
 class ASRProvider(Protocol):
     """Contract every ASR backend must satisfy. Keeps the route provider-agnostic."""
 
-    async def transcribe(self, audio_bytes: bytes, filename: Optional[str]) -> TranscriptionResult:
+    async def transcribe(
+        self,
+        audio_bytes: bytes,
+        filename: Optional[str],
+        content_type: Optional[str],
+    ) -> TranscriptionResult:
         ...
 
 
-class GeminiASRProvider:
-    """Gemini Urdu audio understanding through the official Gemini API."""
+class GroqASRProvider:
+    """Urdu transcription through Groq's OpenAI-compatible audio API."""
 
     async def transcribe(self, audio_bytes: bytes, filename: Optional[str], content_type: Optional[str]) -> TranscriptionResult:
-        text = await asyncio.to_thread(transcribe_audio, audio_bytes, filename, content_type)
+        logger.info(
+            "[ASR DIAG] provider_class=%s model=%s GROQ_API_KEY=%s filename=%s mime_type=%s byte_size=%d",
+            type(self).__name__,
+            settings.GROQ_ASR_MODEL,
+            "YES" if settings.groq_configured else "NO",
+            filename,
+            content_type,
+            len(audio_bytes),
+        )
+        if not settings.groq_configured:
+            raise GeminiConfigurationError("GROQ_API_KEY is not configured")
+        text = await asyncio.to_thread(self._call, audio_bytes, filename, content_type)
         recognised = bool(text.strip())
         return TranscriptionResult(
             text=text,
             language="ur" if recognised else UNRECOGNIZED_LANGUAGE,
             recognised=recognised,
         )
+
+    @staticmethod
+    def _call(audio_bytes: bytes, filename: Optional[str], content_type: Optional[str]) -> str:
+        from openai import OpenAI
+
+        client = OpenAI(
+            api_key=settings.GROQ_API_KEY,
+            base_url="https://api.groq.com/openai/v1",
+        )
+        upload_name = filename or "recording.webm"
+        upload_type = content_type or "audio/webm"
+        logger.info(
+            "[ASR DIAG] Groq request model=%s filename=%s mime_type=%s byte_size=%d",
+            settings.GROQ_ASR_MODEL,
+            upload_name,
+            upload_type,
+            len(audio_bytes),
+        )
+        try:
+            response = client.audio.transcriptions.create(
+                model=settings.GROQ_ASR_MODEL,
+                file=(upload_name, audio_bytes, upload_type),
+                language="ur",
+            )
+        except Exception as exc:
+            logger.error(
+                "Groq audio transcription failed: exception_type=%s status_code=%s message=%s",
+                type(exc).__name__,
+                getattr(exc, "status_code", None),
+                str(exc),
+            )
+            raise GeminiProviderError("Groq audio transcription failed") from exc
+
+        text = (getattr(response, "text", None) or str(response)).strip()
+        if not text:
+            raise GeminiProviderError("Groq returned no transcription")
+        logger.info(
+            "[ASR DIAG] Groq response status_code=%s transcription_received=YES",
+            getattr(response, "status_code", 200),
+        )
+        return text
 
 
 class AzureSpeechASRProvider:
@@ -211,11 +254,18 @@ def _select_provider() -> ASRProvider:
     """
     Choose the ASR backend from configuration.
 
-    Urdu voice input requires the explicit Omni provider configuration.
+    Urdu voice input requires the configured Groq transcription provider.
     """
     if not settings.ASR_ENABLED:
         raise GeminiConfigurationError("ASR_ENABLED must be true for Urdu voice input")
-    return GeminiASRProvider()
+    provider = GroqASRProvider()
+    logger.info(
+        "[ASR DIAG] selected_provider=%s model=%s GROQ_API_KEY=%s",
+        type(provider).__name__,
+        settings.GROQ_ASR_MODEL,
+        "YES" if settings.groq_configured else "NO",
+    )
+    return provider
 
 
 async def transcribe(

@@ -35,13 +35,19 @@ class Settings(BaseSettings):
 
     # ── Google Gemini voice assistant ─────────────────────────────────────
     GEMINI_API_KEY: str = ""
-    GEMINI_TEXT_MODEL: str = "gemini-2.5-flash"
+    GEMINI_TEXT_MODEL: str = "gemini-3.6-flash"
     GEMINI_TTS_MODEL: str = "gemini-2.5-flash-preview-tts"
     GEMINI_TTS_VOICE: str = "Kore"
+    GROQ_API_KEY: str = ""
+    GROQ_ASR_MODEL: str = "whisper-large-v3-turbo"
 
     @property
     def gemini_configured(self) -> bool:
         return bool(self.GEMINI_API_KEY.strip())
+
+    @property
+    def groq_configured(self) -> bool:
+        return bool(self.GROQ_API_KEY.strip())
 
     # ── Legacy Alibaba settings (unused by the voice path) ────────────────
     # Empty key = "AI not configured": the pipeline degrades to safe stubs/

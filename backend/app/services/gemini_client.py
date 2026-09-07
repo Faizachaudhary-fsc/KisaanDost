@@ -68,7 +68,18 @@ def transcribe_audio(audio_bytes: bytes, filename: str | None, content_type: str
             ),
         )
     except Exception as exc:
-        logger.exception("Gemini audio understanding failed")
+        response = getattr(exc, "response", None)
+        status_code = (
+            getattr(exc, "status_code", None)
+            or getattr(response, "status_code", None)
+            or getattr(exc, "code", None)
+        )
+        logger.exception(
+            "Gemini audio understanding failed: exception_type=%s status_code=%s message=%s",
+            type(exc).__name__,
+            status_code,
+            str(exc),
+        )
         raise GeminiProviderError("Gemini audio understanding failed") from exc
 
     text = (getattr(response, "text", None) or "").strip()
